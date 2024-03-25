@@ -22,8 +22,8 @@ public class InvoiceRestController {
         return invoiceRepository.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> get(@PathVariable long id){
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    public ResponseEntity<?> get(@RequestParam("id") long id){
         Optional<Invoice> invoice = invoiceRepository.findById(id);
         if (invoice.isPresent()) {
             return new ResponseEntity<>(invoice, HttpStatus.OK);
@@ -32,8 +32,8 @@ public class InvoiceRestController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> put(@PathVariable long id, @RequestBody Invoice input) {
+    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+    public ResponseEntity<?> put(@RequestParam("id") long id, @RequestBody Invoice input) {
         Optional<Invoice> invoice = invoiceRepository.findById(id);
         if (invoice.isPresent()) {
             Invoice newinvoice = invoice.get();
@@ -52,8 +52,8 @@ public class InvoiceRestController {
         return ResponseEntity.ok(invoice);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable long id){
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    public ResponseEntity<?> delete(@RequestParam("id") long id){
         invoiceRepository.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

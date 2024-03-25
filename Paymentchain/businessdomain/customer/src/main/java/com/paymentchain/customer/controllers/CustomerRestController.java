@@ -23,8 +23,8 @@ public class CustomerRestController {
         return customerRepository.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> get(@PathVariable long id) {
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    public ResponseEntity<?> get(@RequestParam("id") long id) {
         Optional<Customer> customer = customerRepository.findById(id);
         if (customer.isPresent()) {
             return new ResponseEntity<>(customer.get(), HttpStatus.OK);
@@ -33,13 +33,18 @@ public class CustomerRestController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> put(@PathVariable long id, @RequestBody Customer input) {
+    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+    public ResponseEntity<?> put(@RequestParam("id") long id, @RequestBody Customer input) {
         Optional<Customer> customer = customerRepository.findById(id);
         if (customer.isPresent()) {
            Customer newcustomer = customer.get();
-           newcustomer.setName(input.getName());
+           newcustomer.setCode(input.getCode());
+           newcustomer.setNames(input.getNames());
+           newcustomer.setSurname(input.getSurname());
+           newcustomer.setIban(input.getIban());
            newcustomer.setPhone(input.getPhone());
+           newcustomer.setAddress(input.getAddress());
+
            Customer save = customerRepository.save(newcustomer);
            return new ResponseEntity<>(save, HttpStatus.OK);
         } else {
@@ -53,8 +58,8 @@ public class CustomerRestController {
         return ResponseEntity.ok(customer);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable long id) {
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    public ResponseEntity<?> delete(@RequestParam("id") long id) {
         customerRepository.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
