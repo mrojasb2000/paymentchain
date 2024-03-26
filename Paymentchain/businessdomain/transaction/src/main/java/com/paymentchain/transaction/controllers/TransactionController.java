@@ -5,6 +5,7 @@ import com.paymentchain.transaction.entities.Channel;
 import com.paymentchain.transaction.entities.Transaction;
 import com.paymentchain.transaction.entities.vo.TransactionVO;
 import com.paymentchain.transaction.repositories.TransactionRepository;
+import com.paymentchain.transaction.services.ApplyFeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/transaction")
 public class TransactionController {
+    @Autowired
+    private ApplyFeeService applyFeeService;
     @Autowired
     private TransactionRepository transactionRepository;
 
@@ -63,7 +66,7 @@ public class TransactionController {
         newtransaction.setFee(transactionVO.getFee());
         newtransaction.setDate(transactionVO.getDate());
         newtransaction.setChannel(getChannel(transactionVO.getChannel()));
-        newtransaction.setAmount(transactionVO.getAmount());
+        newtransaction.setAmount(applyFeeService.Apply(transactionVO.getAmount(), transactionVO.getFee()));
         newtransaction.setReference(transactionVO.getReference());
         newtransaction.setDescription(transactionVO.getDescription());
         newtransaction.setStatus(getStatus(transactionVO.getStatus()));
