@@ -22,8 +22,8 @@ public class ProductController {
         return productRepository.findAll();
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
-    public ResponseEntity<?> get(@RequestParam("id") long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<?> get(@PathVariable("id") long id) {
         Optional<Product> product = productRepository.findById(id);
         if (product.isPresent()) {
             return new ResponseEntity<>(product.get(), HttpStatus.OK);
@@ -32,8 +32,8 @@ public class ProductController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-    public ResponseEntity<?> put(@RequestParam("id") long id, @RequestBody Product input){
+    @PutMapping("/{id}")
+    public ResponseEntity<?> put(@PathVariable("id") long id, @RequestBody Product input){
         Optional<Product> product = productRepository.findById(id);
         if (product.isPresent()) {
             Product newproduct = product.get();
@@ -52,8 +52,8 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    public ResponseEntity<?> delete(@RequestParam("id") long id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") long id){
         productRepository.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
