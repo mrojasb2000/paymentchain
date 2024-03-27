@@ -115,4 +115,19 @@ public class CustomerRestController {
         assert block != null;
         return block.get("name").asText();
     }
+
+    private List<?> getTransactionByIban(String iban){
+        String TRANSACTION_URL = "http://localhost:8084/transaction";
+        WebClient webClient = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
+                .baseUrl(TRANSACTION_URL)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .defaultUriVariables(Collections.singletonMap("url", TRANSACTION_URL))
+                .build();
+
+        return webClient.method(HttpMethod.GET).uri((uriBuilder) -> uriBuilder
+                .path("/customer/transactions")
+                .queryParam("accountIban", iban)
+                .build())
+                .retrieve().bodyToFlux(Object.class).collectList().block();
+    }
 }
