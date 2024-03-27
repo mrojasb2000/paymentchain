@@ -6,6 +6,11 @@ import com.paymentchain.transaction.entities.Transaction;
 import com.paymentchain.transaction.entities.vo.TransactionVO;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
+
 @Service
 public class TransactionService {
     public Transaction Create(TransactionVO transaction) {
@@ -13,11 +18,11 @@ public class TransactionService {
         newtransaction.setAccountIban(transaction.getAccountIban());
         newtransaction.setFee(transaction.getFee());
         newtransaction.setDate(transaction.getDate());
-        newtransaction.setChannel(getChannel(transaction.getChannel()));
+        newtransaction.setChannel(this.getChannel(transaction.getChannel()));
         newtransaction.setAmount(this.applyFee(transaction.getAmount(), transaction.getFee()));
         newtransaction.setReference(transaction.getReference());
         newtransaction.setDescription(transaction.getDescription());
-        newtransaction.setStatus(getStatus(transaction.getStatus()));
+        newtransaction.setStatus(this.getStatusFromDate(transaction.getDate()));
         return newtransaction;
     }
 
@@ -28,13 +33,12 @@ public class TransactionService {
         return amount;
     }
 
-    private Status getStatus(String name){
-        return switch (name) {
-            case "liquidated" -> Status.LIQUIDATED;
-            case "reject" -> Status.REJECT;
-            case "cancelled" -> Status.CANCELLED;
-            default -> Status.PENDING;
-        };
+    private Status getStatusFromDate(Date date){
+       Date currentDate = new Date();
+       if (date.before(currentDate)){
+           return Status.LIQUIDATED;
+       }
+        return Status.PENDING;
     }
 
     private Channel getChannel(String name){
