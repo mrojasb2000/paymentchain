@@ -37,8 +37,13 @@ public class TransactionController {
         }
     }
 
-    @GetMapping("/customer/transaction/{iban}")
+    /*@GetMapping("/customer/transaction/{iban}")
     public Transaction get(@PathVariable("iban") String accountIban) {
+        return transactionRepository.findByAccountIban(accountIban);
+    }*/
+
+    @GetMapping("/customer/transactions")
+    public Transaction get(@RequestParam("iban") String accountIban) {
         return transactionRepository.findByAccountIban(accountIban);
     }
 

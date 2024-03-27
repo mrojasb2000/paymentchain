@@ -100,6 +100,8 @@ public class CustomerRestController {
         customer.getProducts().forEach(p -> {
             p.setProductName(getProductNameById(p.getProductId()));
         });
+        List<?> transactions = getTransactionByIban(customer.getIban());
+        customer.setTransactions(transactions);
         return customer;
     }
 
@@ -126,7 +128,7 @@ public class CustomerRestController {
 
         return webClient.method(HttpMethod.GET).uri((uriBuilder) -> uriBuilder
                 .path("/customer/transactions")
-                .queryParam("accountIban", iban)
+                .queryParam("iban", iban)
                 .build())
                 .retrieve().bodyToFlux(Object.class).collectList().block();
     }
