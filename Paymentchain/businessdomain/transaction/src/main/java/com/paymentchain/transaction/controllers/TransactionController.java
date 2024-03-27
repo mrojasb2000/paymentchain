@@ -1,11 +1,10 @@
 package com.paymentchain.transaction.controllers;
 
-import com.paymentchain.transaction.entities.Status;
-import com.paymentchain.transaction.entities.Channel;
+import com.paymentchain.transaction.entities.AmountEqualZeroException;
 import com.paymentchain.transaction.entities.Transaction;
 import com.paymentchain.transaction.entities.vo.TransactionVO;
 import com.paymentchain.transaction.repositories.TransactionRepository;
-import com.paymentchain.transaction.services.ApplyFeeService;
+import com.paymentchain.transaction.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,8 @@ import java.util.Optional;
 @RequestMapping("/transaction")
 public class TransactionController {
     @Autowired
-    private ApplyFeeService applyFeeService;
+    private TransactionService transactionService;
+
     @Autowired
     private TransactionRepository transactionRepository;
 
@@ -38,7 +38,7 @@ public class TransactionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> put(@PathVariable("id") long id, @RequestBody TransactionVO input) {
+    public ResponseEntity<?> put(@PathVariable("id") long id, @RequestBody TransactionVO input) throws AmountEqualZeroException  {
         Optional<Transaction> transaction = transactionRepository.findById(id);
         if (transaction.isPresent()){
             Transaction newtransaction = create(input);
@@ -49,7 +49,7 @@ public class TransactionController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> post(@RequestBody TransactionVO input) {
+    public ResponseEntity<?> post(@RequestBody TransactionVO input) throws AmountEqualZeroException {
         Transaction transaction = transactionRepository.save(create(input));
         return ResponseEntity.ok(transaction);
     }
@@ -60,33 +60,12 @@ public class TransactionController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private Transaction create(TransactionVO transactionVO) {
-        Transaction newtransaction = new Transaction();
-        newtransaction.setAccountIban(transactionVO.getAccountIban());
-        newtransaction.setFee(transactionVO.getFee());
-        newtransaction.setDate(transactionVO.getDate());
-        newtransaction.setChannel(getChannel(transactionVO.getChannel()));
-        newtransaction.setAmount(applyFeeService.Apply(transactionVO.getAmount(), transactionVO.getFee()));
-        newtransaction.setReference(transactionVO.getReference());
-        newtransaction.setDescription(transactionVO.getDescription());
-        newtransaction.setStatus(getStatus(transactionVO.getStatus()));
-        return newtransaction;
+    private Transaction create(TransactionVO transactionVO) throws AmountEqualZeroException {
+        if (transactionVO.getAmount() <= 0){
+            throw new AmountEqualZeroException("Amount equal zero value");
+        }
+        return transactionService.Create(transactionVO);
     }
 
-    private Status getStatus(String name){
-        return switch (name) {
-            case "liquidated" -> Status.LIQUIDATED;
-            case "reject" -> Status.REJECT;
-            case "cancelled" -> Status.CANCELLED;
-            default -> Status.PENDING;
-        };
-    }
 
-    private Channel getChannel(String name){
-        return switch (name) {
-            case "office" -> Channel.OFFICE;
-            case "atm" -> Channel.ATM;
-            default -> Channel.WEB;
-        };
-    }
 }
