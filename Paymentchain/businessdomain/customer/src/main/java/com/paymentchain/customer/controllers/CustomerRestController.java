@@ -9,6 +9,7 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +45,14 @@ public class CustomerRestController {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private Environment env;
+
+    @GetMapping("/check")
+    public String check(){
+        return "Property value: " + env.getProperty("custom.activeprofileName");
+    }
 
     @GetMapping()
     public List<Customer> list() {
