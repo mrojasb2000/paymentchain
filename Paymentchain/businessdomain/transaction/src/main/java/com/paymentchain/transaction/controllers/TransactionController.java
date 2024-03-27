@@ -61,8 +61,12 @@ public class TransactionController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") long id) {
-        transactionRepository.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        Optional<Transaction> transaction = transactionRepository.findById(id);
+        if (transaction.isPresent()){
+            transactionRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     private Transaction create(TransactionVO transactionVO) throws AmountEqualZeroException {
