@@ -115,7 +115,7 @@ public class CustomerRestController {
     }
 
     private String getProductNameById(long id){
-        String PRODUCT_URL = "http://localhost:8082/product";
+        String PRODUCT_URL = "http://product/product";
         WebClient webClient = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
                 .baseUrl(PRODUCT_URL)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -128,7 +128,7 @@ public class CustomerRestController {
     }
 
     private List<?> getTransactionByIban(String iban){
-        String TRANSACTION_URL = "http://localhost:8084/transaction";
+        String TRANSACTION_URL = "http://transaction/transaction";
         WebClient webClient = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
                 .baseUrl(TRANSACTION_URL)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
